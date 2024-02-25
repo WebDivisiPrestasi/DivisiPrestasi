@@ -14,7 +14,24 @@
             background-image: linear-gradient(to bottom right, #f4f4f4, #dbe2ef);
         }
 
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-gap: 20px;
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    max-height: 800px;
+    margin: 0 auto;
+}
 
+@media screen and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr; 
+        grid-template-rows: repeat(9, 1fr); 
+    }
+}
         .portfolio {
             display: flex;
             justify-content: center;
