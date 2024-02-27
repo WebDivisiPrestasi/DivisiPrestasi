@@ -9,7 +9,624 @@
         body {
             margin: 0;
             padding: 0;
+            font-family: 'Roboto', sans-serif;<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Divisi Prestasi</title>
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
             font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            background-image: linear-gradient(to bottom right, #f4f4f4, #dbe2ef);
+        }
+
+
+        .portfolio {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            grid-gap: 20px;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            max-height: 800px;
+            margin: 0 auto;
+        }
+
+        .grid-item {
+            background-color: #fff;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .grid-item:hover {
+            transform: scale(1.05);
+        }
+
+        .grid-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    width: 800px; 
+    height: 600px; 
+    -webkit-user-drag: none; 
+}
+
+
+
+        .description {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 31.5%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 999;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+
+
+        .description-content {
+            text-align: center;
+        }
+
+        .grid-item img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    -webkit-user-drag: none;
+}
+
+
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .close-btn:hover {
+            color: #555;
+        }
+
+
+        .external-link {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        
+
+        .external-link:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            text-align: center;
+            position: absolute;
+            background-color: #007bff;
+            bottom: 1;
+            width: 100%;
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: -100px;
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 46px;
+            margin-top: 30px;
+        }
+
+        h3 {
+            font-size: 30px;
+            margin-bottom: -40px;
+        }
+
+        .header-buttons button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item .window-title {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #333;
+            text-align: center;
+            width: 100%;
+        }
+
+@keyframes openAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+@keyframes closeAnimation {
+    from {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.8);
+    }
+
+    
+}
+.header-buttons button:hover {
+    transform: scale(1.1); 
+}
+
+.nav-btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+}
+
+.nav-btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px; 
+    width: 100%;
+    height: 2px; 
+    background-color: #007bff;
+    transform: scaleX(0); 
+    transition: transform 0.3s ease;
+}
+
+
+.nav-btn:hover::after {
+    transform: scaleX(1);
+}
+
+.shape1 {
+    width: 150px;
+    height: 150px;
+    background-color: #ff6347;
+    border-radius: 50%;
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape2 {
+    width: 200px;
+    height: 100px;
+    background-color: #6a5acd;
+    position: absolute;
+    top: 50%;
+    right: 5%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape3 {
+    width: 150px;
+    height: 150px;
+    background-color: #20b2aa;
+    position: absolute;
+    bottom: 10%;
+    right: 15%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    transform: rotate(45deg);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape4 {
+    width: 100px;
+    height: 200px;
+    background-color: #ffd700;
+    position: absolute;
+    top: 80%;
+    left: 5%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    transform: rotate(-45deg);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape5 {
+    width: 120px;
+    height: 120px;
+    background-color: #ff69b4;
+    position: absolute;
+    top: 70%;
+    left: 20%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    transform: rotate(135deg);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape6 {
+    width: 180px;
+    height: 90px;
+    background-color: #00bfff;
+    position: absolute;
+    top: 30%;
+    left: 70%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    transform: rotate(-90deg);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape7 {
+    width: 100px;
+    height: 100px;
+    background-color: #7fff00;
+    position: absolute;
+    top: 20%;
+    right: 20%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+
+.shape8 {
+    width: 160px;
+    height: 160px;
+    background-color: #ff8c00;
+    position: absolute;
+    bottom: 20%;
+    right: 70%;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    transform: rotate(45deg);
+    z-index: -1;
+    animation: floatAnimation 5s ease-in-out infinite;
+}
+@keyframes floatAnimation {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-30px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+.small-image {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 100px; 
+    height: 100px; 
+    border-radius: 50%; 
+    border: 2px solid white; 
+    z-index: 999; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); 
+}
+@media only screen and (max-width: 768px) {
+    .portfolio {
+        padding-top: 150px; 
+    }
+
+    .header-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header-buttons button {
+        margin: 10px 0;
+    }
+
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-item {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .description {
+        width: 90%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .small-image {
+        width: 80px;
+        height: 80px;
+        top: 10px;
+        right: 10px;
+    }
+}
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-gap: 20px;
+    width: 90%;
+    height: 90%;
+    max-width: 1200px;
+    max-height: 800px;
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr; 
+        grid-template-rows: repeat(9, 1fr); 
+    }
+}
+
+
+
+
+
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="shape1"></div>
+<div class="shape2"></div>
+<div class="shape3"></div>
+<div class="shape4"></div>
+<div class="shape5"></div>
+<div class="shape6"></div>
+<div class="shape7"></div>
+<div class="shape8"></div>
+
+    <h1 style="text-align: center;">Divisi Prestasi</h1>
+    <h3 style="text-align: center;">Info Pemenang / Poster</h3>
+    <img src="DivisiPrestasiLogo.jpeg" alt="Small Image" class="small-image">
+
+    <div class="header-buttons" style="display: flex; justify-content: center; margin-top: 70px;">
+        <button class="nav-btn" id="infoLombaBtn" onclick="openNewPage()" style="margin-right: 10px;">Info Lomba</button>
+        <button class="nav-btn" id="infoLombaBtn" onclick="openNewPage1()" style="margin-right: 10px;">Info Pemenang / Poster</button>
+        <button class="nav-btn" id="infoLombaBtn" onclick="openNewPage2()" >About Us</button>
+    </div>
+
+
+    <div class="portfolio">
+        <div class="grid-container">
+            <div class="grid-item" onclick="toggleDescription('description1')">
+                <div class="window-title"><strong>Window 1 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 1">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description2')">
+                <div class="window-title"><strong>Window 2 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 2">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description3')">
+                <div class="window-title"><strong>Window 3 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 3">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description4')">
+                <div class="window-title"><strong>Window 4 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 4">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description5')">
+                <div class="window-title"><strong>Window 5 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 5">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description6')">
+                <div class="window-title"><strong>Window 6 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 6">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description7')">
+                <div class="window-title"><strong>Window 7 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 7">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description8')">
+                <div class="window-title"><strong>Window 8 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 8">
+            </div>
+            <div class="grid-item" onclick="toggleDescription('description9')">
+                <div class="window-title"><strong>Window 9 Title</strong></div>
+                <img src="https://via.placeholder.com/800x600" alt="Project 9">
+            </div>
+        </div>
+    </div>
+
+    <div class="description" id="description1">
+        <span class="close-btn" onclick="toggleDescription('description1')">&times;</span>
+        <div class="description-content">
+            <h2>Project 1</h2>
+            <p>This is a placeholder description for Project 1. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example1.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description2">
+        <span class="close-btn" onclick="toggleDescription('description2')">&times;</span>
+        <div class="description-content">
+            <h2>Project 2</h2>
+            <p>This is a placeholder description for Project 2. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example2.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description3">
+        <span class="close-btn" onclick="toggleDescription('description3')">&times;</span>
+        <div class="description-content">
+            <h2>Project 3</h2>
+            <p>This is a placeholder description for Project 3. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example3.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description4">
+        <span class="close-btn" onclick="toggleDescription('description4')">&times;</span>
+        <div class="description-content">
+            <h2>Project 4</h2>
+            <p>This is a placeholder description for Project 4. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example4.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description5">
+        <span class="close-btn" onclick="toggleDescription('description5')">&times;</span>
+        <div class="description-content">
+            <h2>Project 5</h2>
+            <p>This is a placeholder description for Project 5. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example5.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description6">
+        <span class="close-btn" onclick="toggleDescription('description6')">&times;</span>
+        <div class="description-content">
+            <h2>Project 6</h2>
+            <p>This is a placeholder description for Project 6. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example6.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description7">
+        <span class="close-btn" onclick="toggleDescription('description7')">&times;</span>
+        <div class="description-content">
+            <h2>Project 7</h2>
+            <p>This is a placeholder description for Project 7. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example7.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description8">
+        <span class="close-btn" onclick="toggleDescription('description8')">&times;</span>
+        <div class="description-content">
+            <h2>Project 8</h2>
+            <p>This is a placeholder description for Project 8. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example8.com')">Daftar</a>
+        </div>
+    </div>
+
+    <div class="description" id="description9">
+        <span class="close-btn" onclick="toggleDescription('description9')">&times;</span>
+        <div class="description-content">
+            <h2>Project 9</h2>
+            <p>This is a placeholder description for Project 9. You can write details about your project here.</p>
+            <a href="#" class="external-link" onclick="openExternalLink('https://example9.com')">Daftar</a>
+        </div>
+    </div>
+
+
+    <script>
+
+function toggleDescription(descriptionId) {
+    const description = document.getElementById(descriptionId);
+    const allDescriptions = document.querySelectorAll('.description');
+
+    if (description.style.display === 'block') {
+        closeDescription(description);
+    } else {
+
+        allDescriptions.forEach(desc => {
+            if (desc.id !== descriptionId && desc.style.display === 'block') {
+                closeDescription(desc);
+            }
+        });
+
+        openDescription(description);
+    }
+}
+
+function closeDescription(description) {
+    description.style.animation = 'closeAnimation 0.5s forwards';
+    setTimeout(() => {
+        description.style.display = 'none';
+        description.style.animation = '';
+    }, 500);
+}
+
+function openDescription(description) {
+    description.style.display = 'block';
+    description.style.animation = 'openAnimation 0.5s forwards';
+}
+
+function openExternalLink(url) {
+    window.open(url, '_blank');
+}
+
+function openNewPage() {
+        window.location.href = "DivPrestasi.html";
+    }
+
+    function openNewPage1() {
+        window.location.href = "InfoPemenang.html";
+    }
+
+    function openNewPage2() {
+        window.location.href = "AboutUs.html";
+    }
+
+    const btn = document.getElementById('infoLombaBtn');
+const underline = btn.querySelector('::after');
+
+btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    underline.style.transformOrigin = `${offsetX}px`;
+});
+
+    </script>
+
+<footer><h5>Website Created by Yahya Barnas</h5></footer>
+</body>
+</html>
             background-color: #f4f4f4;
             background-image: linear-gradient(to bottom right, #f4f4f4, #dbe2ef);
         }
