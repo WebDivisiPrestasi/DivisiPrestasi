@@ -1,0 +1,113 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
+}
+.logo {
+    width: 100px; /* Set a fixed width */
+    height: auto; /* Auto adjust height */
+    border-radius: 100%; /* Make it circular */
+    position: relative;
+}
+
+header {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    position: relative;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 35px; 
+    font-weight: bold;
+    color: #333;
+}
+
+p {
+    text-align: center;
+}
+.button {
+    display: block;
+    width: 150px; /* Set a fixed width */
+    height: 30px; /* Adjust height as needed */
+    line-height: 30px; /* Center the text vertically */
+    text-align: center;
+    background-color: #2196f3; /* Light blue color */
+    color: #ffffff; /* White text color */
+    font-size: 12px; /* Adjust font size */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 10px; /* Rounded corners */
+    margin: 5px auto; /* Add space above and below, and center horizontally */
+    transition: transform 0.3s ease; /* Add transition for pop-out effect */
+}
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 22px; /* Smaller font size for the title */
+    }
+    header h2 {
+        font-size: 18px; /* Smaller font size for the title */
+    }
+    
+    .logo {
+        width: 40px; /* Smaller logo */
+    }
+    
+    .button {
+        width: 120px; /* Smaller button width */
+        height: 25px; /* Smaller button height */
+        line-height: 25px; /* Adjust line-height */
+        font-size: 8px; /* Smaller font size */
+    }
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.window {
+    width: 50vw; 
+    height: 50vw; 
+    margin: 5vw 0; 
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.window img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.window:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.light-blue {
+    background-color: #2196f3; 
+}
+
+.light-blue:hover {
+    background-color: #1976d2; 
+}
+
+.button:hover {
+    transform: scale(1.1); 
+}
+
+
