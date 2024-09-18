@@ -16,11 +16,22 @@
         <div class="button light-blue" onclick="navigateTo('info_pemenang.html')">Info Pemenang</div>
         <div class="button light-blue" onclick="navigateTo('about_us.html')">About Us</div>
     </header>
-
+<style>
+        .hidden {
+            display: none;
+        }
+</style>
     <script>
         function navigateTo(url) {
             window.location.href = url;
         }
+
+        document.querySelectorAll('.window').forEach(function(window) {
+            const img = window.querySelector('img');
+            if (!img.src || img.src.endsWith('a')) {
+                window.classList.add('hidden');
+            }
+        });
     </script>
     
     <div class="container">
@@ -34,22 +45,22 @@
             <img src="dp.jpeg" alt="3">
         </div>
         <div class="window" onclick="window.location.href='https://example4.com'">
-            <img src="images/pic4.jpg" alt="4">
+            <img src="a" alt="4">
         </div>
         <div class="window" onclick="window.location.href='https://example5.com'">
-            <img src="images/pic5.jpg" alt="5">
+            <img src="a" alt="5">
         </div>
         <div class="window" onclick="window.location.href='https://example6.com'">
-            <img src="images/pic6.jpg" alt="6">
+            <img src="a" alt="6">
         </div>
         <div class="window" onclick="window.location.href='https://example7.com'">
-            <img src="images/pic7.jpg" alt="7">
+            <img src="a" alt="7">
         </div>
         <div class="window" onclick="window.location.href='https://example8.com'">
-            <img src="images/pic8.jpg" alt="8">
+            <img src="a" alt="8">
         </div>
         <div class="window" onclick="window.location.href='https://example9.com'">
-            <img src="images/pic9.jpg" alt="9">
+            <img src="a" alt="9">
         </div>
     </div>
 </body>
