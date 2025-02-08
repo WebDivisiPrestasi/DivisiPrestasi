@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Goated Yahya</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        :root {
+            --primary: #2a2a2a;
+            --accent: #00ff88;
+            --text: #f5f5f5;
+        }
+
+        body {
+            background: var(--primary);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(42, 42, 42, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeUp 1s forwards;
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeUp 1s 0.2s forwards;
+        }
+
+        .scroll-down {
+            position: absolute;
+            bottom: 40px;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--text);
+            border-radius: 25px;
+            animation: bounce 2s infinite;
+        }
+
+        /* Projects Grid */
+        .projects {
+            padding: 100px 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            transition: 0.3s;
+            cursor: pointer;
+            transform-style: preserve-3d;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px) rotateX(5deg) rotateY(5deg);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Skills Grid */
+        .skills {
+            padding: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-card {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Contact Form */
+        .contact {
+            padding: 100px 50px;
+            text-align: center;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .input-group label {
+            position: absolute;
+            left: 15px;
+            top: 15px;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus ~ label,
+        .input-group input:valid ~ label,
+        .input-group textarea:focus ~ label,
+        .input-group textarea:valid ~ label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.8rem;
+            color: var(--accent);
+        }
+
+        button {
+            padding: 15px 40px;
+            background: var(--accent);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-30px);
+            }
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        /* Interactive Background */
+        .interactive-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav {
+                padding: 20px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .projects, .skills {
+                padding: 50px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <h2>Portfolio Yahya Barnas</h2>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#projects">Projects</a>
+            <a href="#skills">Skills</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <h1>M. Elhakeem Yahya Barnas</h1>
+        <p>Amazing Programming Skills</p>
+        <div class="scroll-down"></div>
+    </section>
+
+    <section class="projects" id="projects">
+        <!-- Add your project cards here -->
+        <div class="project-card">
+            <h3>Project 1</h3>
+            <p>Modern Web Application</p>
+        </div>
+        <div class="project-card">
+            <h3>Project 2</h3>
+            <p>Modern Web Application</p>
+        </div>
+        <div class="project-card">
+            <h3>Project 3</h3>
+            <p>Modern Web Application</p>
+        </div>
+        <div class="project-card">
+            <h3>Project 4</h3>
+            <p>Modern Web Application</p>
+        </div>
+        <div class="project-card">
+            <h3>Project 5</h3>
+            <p>Modern Web Application</p>
+        <!-- Repeat more project cards -->
+    </section>
+
+    <section class="skills" id="skills">
+        <!-- Add your skill cards here -->
+        <div class="skill-card">
+            <h3>Web Development</h3>
+            <p>Full-stack solutions</p>
+        </div>
+        <div class="skill-card">
+            <h3>Youtuber</h3>
+            <p>Content Creator</p>
+        </div>
+        <!-- Repeat more skill cards -->
+    </section>
+
+    <section class="contact" id="contact">
+        <h2>Contact Info</h2>
+        <h4>Email: yahyabarnas2018@gmail.com</h4>
+        <form class="contact-form">
+        </form>
+    </section>
+
+    <div class="interactive-bg"></div>
+
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Parallax effect on project cards
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.transform = `perspective(1000px) rotateX(${(y - rect.height/2)/10}deg) rotateY(${-(x - rect.width/2)/10}deg) translateZ(10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'none';
+            });
+        });
+
+        // Form submission
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Add your form submission logic here
+            alert('Message sent successfully!');
+        });
+
+        // Scroll animation trigger
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = 1;
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.project-card, .skill-card').forEach(el => {
+            el.style.opacity = 0;
+            el.style.transform = 'translateY(50px)';
+            observer.observe(el);
+        });
+
+        // Interactive background particles
+        const interactiveBg = document.querySelector('.interactive-bg');
+        document.addEventListener('mousemove', (e) => {
+            interactiveBg.style.background = `radial-gradient(at ${e.clientX}px ${e.clientY}px, rgba(0,255,136,0.1) 0%, transparent 80%)`;
+        });
+    </script>
+</body>
+</html>
