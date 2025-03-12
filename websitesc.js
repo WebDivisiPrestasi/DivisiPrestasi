@@ -30,10 +30,8 @@ function uploadFile() {
         uploadItem.appendChild(descElement);
         gallery.appendChild(uploadItem);
 
-        // Simpan ke LocalStorage
         saveImage(imageUrl, description);
         
-        // Bersihkan input
         fileInput.value = "";
         descInput.value = "";
     };
@@ -41,14 +39,12 @@ function uploadFile() {
     reader.readAsDataURL(file);
 }
 
-// Simpan gambar ke LocalStorage
 function saveImage(imageUrl, description) {
     let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
     images.push({ imageUrl, description });
     localStorage.setItem("uploadedImages", JSON.stringify(images));
 }
 
-// Muat gambar yang tersimpan saat halaman dibuka
 function loadSavedImages() {
     const gallery = document.getElementById('gallery');
     let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
@@ -69,9 +65,8 @@ function loadSavedImages() {
     });
 }
 
-// Fungsi untuk mereset data
 function resetData() {
     localStorage.removeItem("uploadedImages");
-    document.getElementById('gallery').innerHTML = ""; // Bersihkan tampilan
+    document.getElementById('gallery').innerHTML = ""; 
     alert("Semua data telah dihapus!");
 }
