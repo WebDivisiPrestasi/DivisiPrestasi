@@ -8,8 +8,34 @@
 </head>
 <body>
     <div class="container">
-        <h2>Upload Gambar dengan Deskripsi</h2>
+        <h2>Filter Berdasarkan Bidang</h2>
+        <select id="filterBidang" onchange="filterImages()">
+            <option value="BPH SC">BPH SC</option>
+            <option value="bidang prestasi">Bidang Prestasi</option>
+            <option value="bidang protokoler">Bidang Protokoler</option>
+            <option value="bidang humas">Bidang Humas</option>
+            <option value="bidang keagamaan">Bidang Keagamaan</option>
+            <option value="bidang library">Bidang Student Library</option>
+            <option value="bidang pramuka">Bidang Pramuka</option>
+        </select>
+    </div>    
+    <div class="container">
+        <h2>Upload Dokumentasi Proker</h2>
         <input type="file" id="fileInput" accept="image/*">
+        <input type="date" id="dateInput">
+        <select id="bidangInput" onchange="updateNamaOptions()">
+            <option value="" disabled selected>Pilih Bidang</option>
+            <option value="BPH SC">BPH SC</option>
+            <option value="prestasi">Bidang Prestasi</option>
+            <option value="protokoler">Bidang Protokoler</option>
+            <option value="humas">Bidang Humas</option>
+            <option value="keagamaan">Bidang Keagamaan</option>
+            <option value="library">Bidang Student Library</option>
+            <option value="pramuka">Bidang Pramuka</option>
+        </select>
+        <select id="nameInput" disabled>
+            <option value="" disabled selected>Pilih Nama</option>
+        </select>
         <input type="text" id="descInput" placeholder="Masukkan deskripsi...">
         <button onclick="uploadFile()">Upload</button>
         <button onclick="resetData()">Reset Data</button>
