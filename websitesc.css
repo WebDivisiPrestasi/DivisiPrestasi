@@ -4,7 +4,6 @@ body {
     margin: 20px;
     background-color: #f4f4f4;
 }
-
 .container {
     max-width: 400px;
     margin: auto;
@@ -13,25 +12,21 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
 input, button {
     width: 100%;
     margin: 10px 0;
     padding: 10px;
     font-size: 16px;
 }
-
 button {
     background-color: #007BFF;
     color: white;
     border: none;
     cursor: pointer;
 }
-
 button:hover {
     background-color: #0056b3;
 }
-
 .upload-item {
     margin-top: 20px;
     padding: 10px;
@@ -39,23 +34,18 @@ button:hover {
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-
 .upload-item img {
     max-width: 100%;
     height: auto;
     border-radius: 5px;
 }
-
 .upload-item p {
     font-size: 14px;
     color: #333;
 }
-
 .reset-btn {
     background-color: #dc3545;
 }
-
 .reset-btn:hover {
     background-color: #a71d2a;
 }
-
