@@ -1,59 +1,12 @@
 const BIN_ID = "67df6dc88960c979a576a220";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
-const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-async function saveImage(imageUrl, date, bidang, name, description) {
-    let images = await loadFromJSONBin(); // Ambil data lama dulu
-    images.push({ imageUrl, date, bidang, name, description }); // Tambahkan data baru
-    await saveToJSONBin(images); // Simpan semua data
-}
-async function fetchLatestData() {
-    const binId = "67df6dc88960c979a576a220";
-    const apiKey = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
-    
-    try {
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-            headers: {
-                "X-Master-Key": apiKey
-            }
-        });
-        const result = await response.json();
-        console.log("Data terbaru:", result);
-        
-        // Di sini, kamu bisa update tampilan dengan data baru
-    } catch (error) {
-        console.error("Gagal mengambil data:", error);
-    }
-}
-
-// Cek data terbaru setiap 5 detik
-setInterval(fetchLatestData, 5000);
-
-async function saveToJSONBin(data) {
-    try {
-        const response = await fetch(BIN_URL, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "X-Master-Key": API_KEY
-            },
-            body: JSON.stringify({ records: data }) // Simpan semua data
-        });
-        console.log("Data berhasil disimpan ke JSONBin.io");
-    } catch (error) {
-        console.error("Gagal menyimpan data:", error);
-    }
-}
-
-
-document.addEventListener("DOMContentLoaded", loadSavedImages);
+// 🟢 Fungsi untuk mengisi dropdown nama berdasarkan bidang yang dipilih
 function updateNamaOptions() {
-    const bidangInput = document.getElementById("bidangInput");
+    const bidang = document.getElementById("bidangInput").value;
     const nameInput = document.getElementById("nameInput");
 
-    nameInput.innerHTML = '<option value="" disabled selected>Pilih Nama</option>';
-    
-    const namaBidang = {
+    const namaByBidang = {
         "BPH SC": [
             "Raqilla Almero Radhiza",
             "Fikri Zhafran Arsha",
@@ -181,158 +134,128 @@ function updateNamaOptions() {
           ]                    
     };
 
-    const bidangTerpilih = bidangInput.value;
-
-    if (bidangTerpilih) {
-        namaBidang[bidangTerpilih].forEach(nama => {
-            const option = document.createElement("option");
-            option.value = nama;
-            option.textContent = nama;
-            nameInput.appendChild(option);
-        });
+    nameInput.innerHTML = '<option value="" disabled selected>Pilih Nama</option>';
+    if (namaByBidang[bidang]) {
         nameInput.disabled = false;
+        namaByBidang[bidang].forEach(nama => {
+            nameInput.innerHTML += `<option value="${nama}">${nama}</option>`;
+        });
     } else {
         nameInput.disabled = true;
     }
 }
-async function uploadFile() {
-    const fileInput = document.getElementById("fileInput");
-    const bidangInput = document.getElementById("bidangInput");
-    const namaInput = document.getElementById("namaInput");
 
-    const file = fileInput.files[0];
-    if (!file) {
-        alert("Pilih file dulu!");
+// 🟢 Fungsi untuk mengupload data ke JSONBin.io
+async function uploadFile() {
+    const fileInput = document.getElementById("fileInput").files[0];
+    const bidang = document.getElementById("bidangInput").value;
+    const nama = document.getElementById("nameInput").value;
+    const tanggal = document.getElementById("dateInput").value;
+    const deskripsi = document.getElementById("descInput").value;
+
+    if (!fileInput || !bidang || !nama || !tanggal || !deskripsi) {
+        alert("Semua field harus diisi!");
         return;
     }
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(fileInput);
     reader.onload = async function () {
         const base64String = reader.result; // Konversi ke Base64
 
-        const binId = "BIN_ID_KAMU"; // Ganti dengan ID bin JSONBin.io
-        const apiKey = "API_KEY_KAMU"; // Ganti dengan API Key kamu
+        // 1️⃣ Ambil data lama dulu agar tidak menimpa
+        let response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { "X-Master-Key": API_KEY }
+        });
 
-        // Data yang akan disimpan
-        const data = {
-            bidang: bidangInput.value,
-            nama: namaInput.value,
-            tanggal: new Date().toISOString().split("T")[0], // Format YYYY-MM-DD
+        let dataList = [];
+        if (response.ok) {
+            const result = await response.json();
+            dataList = result.record || [];
+        }
+
+        // 2️⃣ Tambahkan data baru ke dalam array
+        const newData = {
+            bidang,
+            nama,
+            tanggal,
+            deskripsi,
             file: base64String
         };
+        dataList.push(newData);
 
-        // Simpan ke JSONBin.io
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+        // 3️⃣ Simpan kembali ke JSONBin.io
+        const saveResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "X-Master-Key": apiKey
+                "X-Master-Key": API_KEY
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(dataList)
         });
 
-        if (response.ok) {
+        if (saveResponse.ok) {
             alert("File berhasil di-upload!");
+            fetchFile(); // Perbarui tampilan gallery
         } else {
             alert("Gagal upload file.");
         }
     };
 }
-async function fetchFile() {
-    const binId = "BIN_ID_KAMU";
-    const apiKey = "API_KEY_KAMU";
 
-    const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-        headers: { "X-Master-Key": apiKey }
+// 🟢 Fungsi untuk mengambil dan menampilkan data dari JSONBin.io
+async function fetchFile() {
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
     });
 
     const result = await response.json();
-    const data = result.record; // Ambil data dari JSONBin.io
+    const dataList = result.record; // Ambil semua data
 
-    // Tampilkan data di halaman
-    document.getElementById("output").innerHTML = `
-        <p><strong>Bidang:</strong> ${data.bidang}</p>
-        <p><strong>Nama:</strong> ${data.nama}</p>
-        <p><strong>Tanggal:</strong> ${data.tanggal}</p>
-        <img src="${data.file}" style="max-width: 100%;">
-    `;
-}
-
-async function saveImage(imageUrl, date, bidang, name, description) {
-    let images = await loadFromJSONBin(); // Ambil data terbaru
-    images.push({ imageUrl, date, bidang, name, description });
-    await saveToJSONBin(images); // Simpan ke JSONBin.io
-}
-
-async function loadFromJSONBin() {
-    try {
-        const response = await fetch(BIN_URL, {
-            method: "GET",
-            headers: {
-                "X-Master-Key": API_KEY
-            }
-        });
-        const json = await response.json();
-        return json.record.records || [];
-    } catch (error) {
-        console.error("Gagal mengambil data:", error);
-        return [];
-    }
-}
-async function loadSavedImages() {
-    const gallery = document.getElementById("gallery");
-    gallery.innerHTML = "";
-    let images = await loadFromJSONBin();
-
-    if (!images || images.length === 0) {
-        gallery.innerHTML = "<p>Belum ada upload.</p>";
-        return;
-    }
-
-    images.forEach(({ imageUrl, date, bidang, name, description }) => {
-        const uploadItem = document.createElement("div");
-        uploadItem.classList.add("upload-item");
-
-        const imgElement = document.createElement("img");
-        imgElement.src = imageUrl;
-
-        const descElement = document.createElement("p");
-        descElement.innerHTML = `<strong>${date} - ${bidang} - ${name}</strong><br>${description}`;
-
-        uploadItem.appendChild(imgElement);
-        uploadItem.appendChild(descElement);
-        gallery.appendChild(uploadItem);
+    let galleryHTML = "";
+    dataList.forEach(data => {
+        galleryHTML += `
+            <div class="card" data-bidang="${data.bidang}">
+                <p><strong>Bidang:</strong> ${data.bidang}</p>
+                <p><strong>Nama:</strong> ${data.nama}</p>
+                <p><strong>Tanggal:</strong> ${data.tanggal}</p>
+                <p><strong>Deskripsi:</strong> ${data.deskripsi}</p>
+                <img src="${data.file}" style="max-width: 100%;">
+            </div>
+        `;
     });
+
+    document.getElementById("gallery").innerHTML = galleryHTML;
 }
-function resetData() {
-    localStorage.removeItem("uploadedImages");
-    document.getElementById('gallery').innerHTML = ""; 
-    alert("Semua data telah dihapus!");
-}
+
+// 🟢 Fungsi untuk filter gambar berdasarkan bidang
 function filterImages() {
     const filterBidang = document.getElementById("filterBidang").value;
-    const gallery = document.getElementById("gallery");
-    gallery.innerHTML = "";
-    let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
-    images.forEach(({ imageUrl, date, bidang, name, description }) => {
-        if (filterBidang === "all" || bidang.toLowerCase() === filterBidang.toLowerCase()) {
-            const uploadItem = document.createElement("div");
-            uploadItem.classList.add("upload-item");
+    const cards = document.querySelectorAll(".card");
 
-            const imgElement = document.createElement("img");
-            imgElement.src = imageUrl;
-
-            const descElement = document.createElement("p");
-            descElement.innerHTML = `<strong>${date} - ${bidang} - ${name}</strong><br>${description}`;
-
-            uploadItem.appendChild(imgElement);
-            uploadItem.appendChild(descElement);
-            gallery.appendChild(uploadItem);
+    cards.forEach(card => {
+        if (filterBidang === "" || card.dataset.bidang === filterBidang) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
         }
     });
 }
-function loadSavedImages() {
-    filterImages(); 
+
+// 🟢 Fungsi untuk reset semua data di JSONBin.io
+async function resetData() {
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify([])
+    });
+
+    alert("Data berhasil direset!");
+    fetchFile();
 }
-setInterval(loadSavedImages, 5000);
+
+// 🔄 Panggil fetchFile() saat halaman dibuka
+fetchFile();
