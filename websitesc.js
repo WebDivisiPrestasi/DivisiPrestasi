@@ -1,7 +1,73 @@
 const BIN_ID = "67df82da8960c979a576a970";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
+const MAX_BIN_SIZE = 10; // Ganti sesuai kebutuhan
 
 // 🟢 Fungsi untuk mengisi dropdown nama berdasarkan bidang yang dipilih
+async function createNewBin() {
+    try {
+        const response = await fetch("https://api.jsonbin.io/v3/b", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": API_KEY,
+                "X-Bin-Private": "false" // Buat bin public
+            },
+            body: JSON.stringify({ files: [] }) // Bin kosong
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            BIN_ID = result.metadata.id; // Perbarui ID bin yang digunakan
+            alert("Bin baru berhasil dibuat!");
+        } else {
+            alert("Gagal membuat bin baru.");
+        }
+    } catch (error) {
+        console.error("Error saat membuat bin baru:", error);
+    }
+}
+
+
+async function compressImage(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function () {
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                // Tentukan ukuran baru
+                let width = img.width;
+                let height = img.height;
+                const maxSize = 800;
+
+                if (width > maxSize || height > maxSize) {
+                    if (width > height) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    } else {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Kompresi gambar ke kualitas 70%
+                resolve(canvas.toDataURL("image/jpeg", 0.7));
+            };
+            img.onerror = reject;
+        };
+        reader.onerror = reject;
+    });
+}
+
+
 function updateNamaOptions() {
     const bidang = document.getElementById("bidangInput").value;
     const nameInput = document.getElementById("nameInput");
@@ -155,14 +221,13 @@ async function getBinData() {
 
         if (response.ok) {
             const result = await response.json();
-            return result.record.files || []; // Ambil array 'files', default []
+            return result.record.files || [];
         }
     } catch (error) {
         console.error("Gagal mengambil data:", error);
     }
     return [];
 }
-
 // 🟢 Fungsi untuk mengupload file ke JSONBin.io
 async function uploadFile() {
     const fileInput = document.getElementById("fileInput").files[0];
@@ -176,20 +241,26 @@ async function uploadFile() {
         return;
     }
 
-    // ✅ Cek ekstensi & ukuran file
+    // ✅ Cek ekstensi & ukuran file sebelum dikompresi
     const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-    if (!allowedTypes.includes(fileInput.type) || fileInput.size > 2 * 1024 * 1024) {
-        alert("Hanya file .jpg, .png, .gif dengan max 2MB yang diperbolehkan!");
+    if (!allowedTypes.includes(fileInput.type)) {
+        alert("Hanya file .jpg, .png, .gif yang diperbolehkan!");
         return;
     }
 
-    const reader = new FileReader();
-    reader.readAsDataURL(fileInput);
-    reader.onload = async function () {
-        const base64String = reader.result;
+    try {
+        const compressedImage = await compressImage(fileInput);
 
         let dataList = await getBinData(); // Ambil data lama
-        dataList.push({ bidang, nama, tanggal, deskripsi, file: base64String }); // Tambahkan file baru
+
+        // 🟢 **Cek apakah bin sudah penuh**
+        if (dataList.length >= MAX_BIN_SIZE) {
+            await createNewBin(); // Buat bin baru jika penuh
+            dataList = []; // Kosongkan list
+        }
+
+        // Tambahkan file baru
+        dataList.push({ bidang, nama, tanggal, deskripsi, file: compressedImage });
 
         // Simpan kembali ke JSONBin.io
         const saveResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -207,8 +278,12 @@ async function uploadFile() {
         } else {
             alert("Gagal upload file.");
         }
-    };
+    } catch (error) {
+        console.error("Gagal mengompresi atau mengupload file:", error);
+        alert("Terjadi kesalahan saat mengunggah.");
+    }
 }
+
 
 // 🟢 Fungsi untuk menampilkan data dari JSONBin.io
 async function fetchFile() {
