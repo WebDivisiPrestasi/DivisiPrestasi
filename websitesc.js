@@ -328,5 +328,3 @@ async function resetData() {
 
 // 🔄 Panggil fetchFile() saat halaman dibuka
 fetchFile();
-
-kan ini kan uhhh untuk file js kan?
