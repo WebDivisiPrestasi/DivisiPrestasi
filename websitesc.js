@@ -2,7 +2,6 @@ const BIN_ID = "67df82da8960c979a576a970";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
 const MAX_BIN_SIZE = 1; // Ganti sesuai kebutuhan
 
-// 🟢 Fungsi untuk mengisi dropdown nama berdasarkan bidang yang dipilih
 async function createNewBin() {
     try {
         const response = await fetch("https://api.jsonbin.io/v3/b", {
@@ -26,8 +25,6 @@ async function createNewBin() {
         console.error("Error saat membuat bin baru:", error);
     }
 }
-
-
 async function compressImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -66,8 +63,6 @@ async function compressImage(file) {
         reader.onerror = reject;
     });
 }
-
-
 function updateNamaOptions() {
     const bidang = document.getElementById("bidangInput").value;
     const nameInput = document.getElementById("nameInput");
