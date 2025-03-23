@@ -10,15 +10,17 @@
     <div class="container">
         <h2>Filter Berdasarkan Bidang</h2>
         <select id="filterBidang" onchange="filterImages()">
+            <option value="">Semua Bidang</option>
             <option value="BPH SC">BPH SC</option>
-            <option value="bidang prestasi">Bidang Prestasi</option>
-            <option value="bidang protokoler">Bidang Protokoler</option>
-            <option value="bidang humas">Bidang Humas</option>
-            <option value="bidang keagamaan">Bidang Keagamaan</option>
+            <option value="prestasi">Bidang Prestasi</option>
+            <option value="protokoler">Bidang Protokoler</option>
+            <option value="humas">Bidang Humas</option>
+            <option value="keagamaan">Bidang Keagamaan</option>
             <option value="Bidang Student Library">Bidang Student Library</option>
-            <option value="bidang pramuka">Bidang Pramuka</option>
+            <option value="pramuka">Bidang Pramuka</option>
         </select>
     </div>    
+
     <div class="container">
         <h2>Upload Dokumentasi Proker</h2>
         <input type="file" id="fileInput" accept="image/*">
@@ -40,7 +42,9 @@
         <button onclick="uploadFile()">Upload</button>
         <button onclick="resetData()">Reset Data</button>
     </div>
+
     <div id="gallery"></div>
+
     <script src="websitesc.js"></script>
 </body>
 </html>
