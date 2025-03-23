@@ -1,4 +1,4 @@
-const BIN_ID = "67df6dc88960c979a576a220";
+const BIN_ID = "67df82da8960c979a576a970";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
 
 // 🟢 Fungsi untuk mengisi dropdown nama berdasarkan bidang yang dipilih
