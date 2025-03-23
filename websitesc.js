@@ -1,6 +1,18 @@
 const BIN_ID = "67df82da8960c979a576a970";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
 const MAX_BIN_SIZE = 1; // Ganti sesuai kebutuhan
+
+function saveBinId(newBinId) {
+    let binList = JSON.parse(localStorage.getItem("binList")) || [];
+    if (!binList.includes(newBinId)) {
+        binList.push(newBinId);
+        localStorage.setItem("binList", JSON.stringify(binList));
+    }
+}
+
+function getBinList() {
+    return JSON.parse(localStorage.getItem("binList")) || [];
+}
 async function createNewBin() {
     try {
         const response = await fetch("https://api.jsonbin.io/v3/b", {
@@ -8,14 +20,15 @@ async function createNewBin() {
             headers: {
                 "Content-Type": "application/json",
                 "X-Master-Key": API_KEY,
-                "X-Bin-Private": "false" // Buat bin public
+                "X-Bin-Private": "false"
             },
-            body: JSON.stringify({ files: [] }) // Bin kosong
+            body: JSON.stringify({ files: [] })
         });
 
         if (response.ok) {
             const result = await response.json();
             BIN_ID = result.metadata.id; // Perbarui ID bin yang digunakan
+            saveBinId(BIN_ID); // Simpan BIN ID ke LocalStorage
             alert("Bin baru berhasil dibuat!");
         } else {
             alert("Gagal membuat bin baru.");
@@ -24,11 +37,6 @@ async function createNewBin() {
         console.error("Error saat membuat bin baru:", error);
     }
 }
-
-// 🟢 Fungsi untuk mengisi dropdown nama berdasarkan bidang yang dipilih
-function updateNamaOptions() {
-    const bidang = document.getElementById("bidangInput").value;
-    const nameInput = document.getElementById("nameInput");
 async function compressImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -67,6 +75,9 @@ async function compressImage(file) {
         reader.onerror = reject;
     });
 }
+function updateNamaOptions() {
+    const bidang = document.getElementById("bidangInput").value;
+    const nameInput = document.getElementById("nameInput");
 
     const namaByBidang = {
         "BPH SC": [
@@ -209,22 +220,29 @@ async function compressImage(file) {
 }
 
 // 🟢 Fungsi untuk mengambil data lama dari JSONBin.io
-async function getBinData() {
-    try {
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { "X-Master-Key": API_KEY }
-        });
+async function getAllFiles() {
+    let allFiles = [];
+    let binList = getBinList();
 
-        if (response.ok) {
-            const result = await response.json();
-            return result.record.files || [];
+    for (let binId of binList) {
+        try {
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+                headers: { "X-Master-Key": API_KEY }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.record.files) {
+                    allFiles = allFiles.concat(result.record.files);
+                }
+            }
+        } catch (error) {
+            console.error(`Gagal mengambil data dari bin ${binId}:`, error);
         }
-    } catch (error) {
-        console.error("Gagal mengambil data:", error);
     }
-    return [];
+    
+    return allFiles;
 }
-
 
 // 🟢 Fungsi untuk mengupload file ke JSONBin.io
 async function uploadFile() {
@@ -285,23 +303,24 @@ async function uploadFile() {
 
 // 🟢 Fungsi untuk menampilkan data dari JSONBin.io
 async function fetchFile() {
-    const dataList = await getBinData(); // Ambil data dari JSONBin.io
+    let allFiles = await getAllFiles();
+    const fileList = document.getElementById("fileList");
+    fileList.innerHTML = "";
 
-    let galleryHTML = "";
-    dataList.forEach(data => {
-        galleryHTML += `
-            <div class="card" data-bidang="${data.bidang}">
-                <p><strong>Bidang:</strong> ${data.bidang}</p>
-                <p><strong>Nama:</strong> ${data.nama}</p>
-                <p><strong>Tanggal:</strong> ${data.tanggal}</p>
-                <p><strong>Deskripsi:</strong> ${data.deskripsi}</p>
-                <img src="${data.file}" style="max-width: 100%;">
-            </div>
+    allFiles.forEach(fileData => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <p><strong>Bidang:</strong> ${fileData.bidang}</p>
+            <p><strong>Nama:</strong> ${fileData.nama}</p>
+            <p><strong>Tanggal:</strong> ${fileData.tanggal}</p>
+            <p><strong>Deskripsi:</strong> ${fileData.deskripsi}</p>
+            <img src="${fileData.file}" alt="Uploaded Image" style="max-width: 200px;">
+            <hr>
         `;
+        fileList.appendChild(listItem);
     });
-
-    document.getElementById("gallery").innerHTML = galleryHTML;
 }
+
 
 // 🟢 Fungsi untuk filter gambar berdasarkan bidang
 function filterImages() {
