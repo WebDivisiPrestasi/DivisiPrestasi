@@ -10,7 +10,12 @@ function saveBinId(newBinId) {
         localStorage.setItem("binList", JSON.stringify(binList));
     }
 }
-
+function filterImages() {
+    const filterBidang = document.getElementById("filterBidang").value;
+    document.querySelectorAll(".card").forEach(card => {
+        card.style.display = filterBidang === "" || card.dataset.bidang === filterBidang ? "block" : "none";
+    });
+}
 // Cek apakah bin sudah penuh
 async function isBinFull() {
     try {
@@ -256,14 +261,21 @@ async function getAllFiles() {
 // Upload file ke JSONBin.io
 async function uploadFile() {
     const fileInput = document.getElementById("fileInput").files[0];
-    if (!fileInput) return alert("Pilih file terlebih dahulu!");
+    const bidang = document.getElementById("bidangInput").value;
+    const nama = document.getElementById("nameInput").value;
+    const tanggal = document.getElementById("dateInput").value;
+    const deskripsi = document.getElementById("descInput").value;
+     if (!fileInput || !bidang || !nama || !tanggal || !deskripsi) {
+        alert("Semua field harus diisi!");
+        return;
+    }
     const compressedImage = await compressImage(fileInput);
     let dataList = await getAllFiles();
     if (await isBinFull()) {
         await createNewBin();
         dataList = [];
     }
-    dataList.push({ fileName: fileInput.name, file: compressedImage });
+    dataList.push({ bidang, nama, tanggal, deskripsi, fileName: fileInput.name, file: compressedImage });
     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
@@ -275,8 +287,34 @@ async function uploadFile() {
 
 // Ambil dan tampilkan file
 async function fetchFile() {
+    let allFiles = await getAllFiles();
     const fileList = document.getElementById("fileList");
-    fileList.innerHTML = (await getAllFiles()).map(file => `<p>${file.fileName}</p>`).join("");
-}
+    fileList.innerHTML = "";
 
+    allFiles.forEach(fileData => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = 
+            <p><strong>Bidang:</strong> ${fileData.bidang}</p>
+            <p><strong>Nama:</strong> ${fileData.nama}</p>
+            <p><strong>Tanggal:</strong> ${fileData.tanggal}</p>
+            <p><strong>Deskripsi:</strong> ${fileData.deskripsi}</p>
+            <img src="${fileData.file}" alt="Uploaded Image" style="max-width: 200px;">
+            <hr>
+        ;
+        fileList.appendChild(listItem);
+    });
+}
+async function resetData() {
+    await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+        },
+        body: JSON.stringify({ files: [] }) // Kosongkan bin
+    });
+
+    alert("Data berhasil direset!");
+    fetchFile();
+}
 fetchFile();
