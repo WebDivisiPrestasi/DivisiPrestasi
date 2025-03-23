@@ -1,6 +1,7 @@
-const BIN_ID = "67df82da8960c979a576a970";
+let BIN_ID = "67df82da8960c979a576a970"; // Ganti dari const ke let
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
 const MAX_BIN_SIZE = 1; // Ganti sesuai kebutuhan
+const fileName = `${Date.now()}-${fileInput.name}`;
 
 function saveBinId(newBinId) {
     let binList = JSON.parse(localStorage.getItem("binList")) || [];
@@ -9,7 +10,20 @@ function saveBinId(newBinId) {
         localStorage.setItem("binList", JSON.stringify(binList));
     }
 }
-
+async function isBinFull() {
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+            headers: { "X-Master-Key": API_KEY }
+        });
+        if (response.ok) {
+            const result = await response.json();
+            return result.record.files.length >= MAX_BIN_SIZE;
+        }
+    } catch (error) {
+        console.error("Gagal mengecek kapasitas bin:", error);
+    }
+    return false;
+}
 function getBinList() {
     return JSON.parse(localStorage.getItem("binList")) || [];
 }
@@ -271,13 +285,14 @@ async function uploadFile() {
  // Ambil data lama
 
         // 🟢 **Cek apakah bin sudah penuh**
-        if (dataList.length >= MAX_BIN_SIZE) {
-            await createNewBin(); // Buat bin baru jika penuh
-            dataList = []; // Kosongkan list
+        if (await isBinFull()) {
+            await createNewBin(); 
+            dataList = []; 
         }
 
+
         // Tambahkan file baru
-        dataList.push({ bidang, nama, tanggal, deskripsi, file: compressedImage });
+        dataList.push({ bidang, nama, tanggal, deskripsi, fileName, file: compressedImage });
 
         // Simpan kembali ke JSONBin.io
         const saveResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
@@ -311,17 +326,30 @@ async function fetchFile() {
     allFiles.forEach(fileData => {
         const listItem = document.createElement("li");
         listItem.innerHTML = `
-            <p><strong>Bidang:</strong> ${fileData.bidang}</p>
-            <p><strong>Nama:</strong> ${fileData.nama}</p>
-            <p><strong>Tanggal:</strong> ${fileData.tanggal}</p>
-            <p><strong>Deskripsi:</strong> ${fileData.deskripsi}</p>
-            <img src="${fileData.file}" alt="Uploaded Image" style="max-width: 200px;">
-            <hr>
+        <p><strong>Bidang:</strong> ${fileData.bidang}</p>
+        <p><strong>Nama:</strong> ${fileData.nama}</p>
+        <p><strong>Tanggal:</strong> ${fileData.tanggal}</p>
+        <p><strong>Deskripsi:</strong> ${fileData.deskripsi}</p>
+        <img src="${fileData.file}" alt="Uploaded Image" 
+             style="max-width: 200px; cursor: pointer;" 
+             onclick="openImageModal('${fileData.file}')">
+        <hr>
         `;
+
         fileList.appendChild(listItem);
     });
 }
 
+function openImageModal(imageSrc) {
+    const modal = document.createElement("div");
+    modal.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:1000;">
+            <img src="${imageSrc}" style="max-width:90%;max-height:90%;">
+            <button onclick="this.parentElement.remove()" style="position:absolute;top:10px;right:10px;padding:5px 10px;background:red;color:white;border:none;cursor:pointer;">X</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
 
 // 🟢 Fungsi untuk filter gambar berdasarkan bidang
 function filterImages() {
