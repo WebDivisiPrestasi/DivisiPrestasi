@@ -96,7 +96,7 @@ function updateNamaOptions() {
             "Keanu Al Atha Juan Azzuri"
           ]
           ,
-        "library":[
+        "Bidang Student Library":[
             "Sabrina Azizah",
             "Aliya Khalisha Mardia",
             "Aditri Mallick",
