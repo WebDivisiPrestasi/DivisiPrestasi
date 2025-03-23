@@ -267,8 +267,7 @@ async function uploadFile() {
     try {
         const compressedImage = await compressImage(fileInput);
 
-        let dataList = await getAllFiles(); // Ambil semua file dari semua bin
- // Ambil data lama
+        let dataList = await getBinData(); // Ambil data lama
 
         // 🟢 **Cek apakah bin sudah penuh**
         if (dataList.length >= MAX_BIN_SIZE) {
