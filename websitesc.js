@@ -2,6 +2,12 @@ const BIN_ID = "67df6dc88960c979a576a220";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
+async function saveImage(imageUrl, date, bidang, name, description) {
+    let images = await loadFromJSONBin(); // Ambil data lama dulu
+    images.push({ imageUrl, date, bidang, name, description }); // Tambahkan data baru
+    await saveToJSONBin(images); // Simpan semua data
+}
+
 async function saveToJSONBin(data) {
     try {
         const response = await fetch(BIN_URL, {
@@ -10,13 +16,14 @@ async function saveToJSONBin(data) {
                 "Content-Type": "application/json",
                 "X-Master-Key": API_KEY
             },
-            body: JSON.stringify({ records: data })
+            body: JSON.stringify({ records: data }) // Simpan semua data
         });
         console.log("Data berhasil disimpan ke JSONBin.io");
     } catch (error) {
         console.error("Gagal menyimpan data:", error);
     }
 }
+
 
 document.addEventListener("DOMContentLoaded", loadSavedImages);
 function updateNamaOptions() {
@@ -255,6 +262,11 @@ async function loadSavedImages() {
     const gallery = document.getElementById("gallery");
     gallery.innerHTML = "";
     let images = await loadFromJSONBin();
+
+    if (!images || images.length === 0) {
+        gallery.innerHTML = "<p>Belum ada upload.</p>";
+        return;
+    }
 
     images.forEach(({ imageUrl, date, bidang, name, description }) => {
         const uploadItem = document.createElement("div");
