@@ -1,3 +1,23 @@
+const BIN_ID = "67df6dc88960c979a576a220";
+const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+
+async function saveToJSONBin(data) {
+    try {
+        const response = await fetch(BIN_URL, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": API_KEY
+            },
+            body: JSON.stringify({ records: data })
+        });
+        console.log("Data berhasil disimpan ke JSONBin.io");
+    } catch (error) {
+        console.error("Gagal menyimpan data:", error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", loadSavedImages);
 function updateNamaOptions() {
     const bidangInput = document.getElementById("bidangInput");
@@ -142,7 +162,6 @@ function updateNamaOptions() {
             option.textContent = nama;
             nameInput.appendChild(option);
         });
-
         nameInput.disabled = false;
     } else {
         nameInput.disabled = true;
@@ -211,17 +230,32 @@ function uploadFile() {
     
     reader.readAsDataURL(file);
 }
-function saveImage(imageUrl, date, bidang, name, description) {
-    let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
+async function saveImage(imageUrl, date, bidang, name, description) {
+    let images = await loadFromJSONBin(); // Ambil data terbaru
     images.push({ imageUrl, date, bidang, name, description });
-    localStorage.setItem("uploadedImages", JSON.stringify(images));
+    await saveToJSONBin(images); // Simpan ke JSONBin.io
 }
-function loadSavedImages() {
-    const gallery = document.getElementById('gallery');
-    let images = JSON.parse(localStorage.getItem("uploadedImages")) || [];
 
+async function loadFromJSONBin() {
+    try {
+        const response = await fetch(BIN_URL, {
+            method: "GET",
+            headers: {
+                "X-Master-Key": API_KEY
+            }
+        });
+        const json = await response.json();
+        return json.record.records || [];
+    } catch (error) {
+        console.error("Gagal mengambil data:", error);
+        return [];
+    }
+}
+async function loadSavedImages() {
+    const gallery = document.getElementById("gallery");
     gallery.innerHTML = "";
-    
+    let images = await loadFromJSONBin();
+
     images.forEach(({ imageUrl, date, bidang, name, description }) => {
         const uploadItem = document.createElement("div");
         uploadItem.classList.add("upload-item");
@@ -267,3 +301,4 @@ function filterImages() {
 function loadSavedImages() {
     filterImages(); 
 }
+setInterval(loadSavedImages, 5000);
