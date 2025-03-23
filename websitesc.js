@@ -1,8 +1,7 @@
-let BIN_ID = "67df82da8960c979a576a970"; // ID JSONBin.io
+const BIN_ID = "67df82da8960c979a576a970";
 const API_KEY = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
-const MAX_BIN_SIZE = 1; // Maksimal jumlah file dalam satu bin
+const MAX_BIN_SIZE = 1; // Ganti sesuai kebutuhan
 
-// Simpan ID Bin ke localStorage
 function saveBinId(newBinId) {
     let binList = JSON.parse(localStorage.getItem("binList")) || [];
     if (!binList.includes(newBinId)) {
@@ -10,34 +9,10 @@ function saveBinId(newBinId) {
         localStorage.setItem("binList", JSON.stringify(binList));
     }
 }
-function filterImages() {
-    const filterBidang = document.getElementById("filterBidang").value;
-    document.querySelectorAll(".card").forEach(card => {
-        card.style.display = filterBidang === "" || card.dataset.bidang === filterBidang ? "block" : "none";
-    });
-}
-// Cek apakah bin sudah penuh
-async function isBinFull() {
-    try {
-        const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-            headers: { "X-Master-Key": API_KEY }
-        });
-        if (response.ok) {
-            const result = await response.json();
-            return result.record.files.length >= MAX_BIN_SIZE;
-        }
-    } catch (error) {
-        console.error("Gagal mengecek kapasitas bin:", error);
-    }
-    return false;
-}
 
-// Ambil daftar Bin dari localStorage
 function getBinList() {
     return JSON.parse(localStorage.getItem("binList")) || [];
 }
-
-// Buat Bin baru jika penuh
 async function createNewBin() {
     try {
         const response = await fetch("https://api.jsonbin.io/v3/b", {
@@ -52,8 +27,8 @@ async function createNewBin() {
 
         if (response.ok) {
             const result = await response.json();
-            BIN_ID = result.metadata.id;
-            saveBinId(BIN_ID);
+            BIN_ID = result.metadata.id; // Perbarui ID bin yang digunakan
+            saveBinId(BIN_ID); // Simpan BIN ID ke LocalStorage
             alert("Bin baru berhasil dibuat!");
         } else {
             alert("Gagal membuat bin baru.");
@@ -62,8 +37,6 @@ async function createNewBin() {
         console.error("Error saat membuat bin baru:", error);
     }
 }
-
-// Kompres gambar sebelum upload
 async function compressImage(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -74,9 +47,12 @@ async function compressImage(file) {
             img.onload = function () {
                 const canvas = document.createElement("canvas");
                 const ctx = canvas.getContext("2d");
+
+                // Tentukan ukuran baru
                 let width = img.width;
                 let height = img.height;
                 const maxSize = 800;
+
                 if (width > maxSize || height > maxSize) {
                     if (width > height) {
                         height *= maxSize / width;
@@ -86,9 +62,12 @@ async function compressImage(file) {
                         height = maxSize;
                     }
                 }
+
                 canvas.width = width;
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
+
+                // Kompresi gambar ke kualitas 70%
                 resolve(canvas.toDataURL("image/jpeg", 0.7));
             };
             img.onerror = reject;
@@ -96,10 +75,12 @@ async function compressImage(file) {
         reader.onerror = reject;
     });
 }
+function updateNamaOptions() {
+    const bidang = document.getElementById("bidangInput").value;
+    const nameInput = document.getElementById("nameInput");
 
-// Daftar nama berdasarkan bidang
-const namaByBidang = {
-    "BPH SC": [
+    const namaByBidang = {
+        "BPH SC": [
             "Raqilla Almero Radhiza",
             "Fikri Zhafran Arsha",
             "Ladeya Kalin Aruna",
@@ -223,28 +204,32 @@ const namaByBidang = {
             "Khalisha Izzaty Kailani",
             "Khansa Faizah Kurnida",
             "Shantika Ghita Alfatin"
-          ]
-};
+          ]                    
+    };
 
-// Perbarui opsi nama berdasarkan bidang yang dipilih
-function updateNamaOptions() {
-    const bidang = document.getElementById("bidangInput").value;
-    const nameInput = document.getElementById("nameInput");
-    nameInput.innerHTML = "<option value='' disabled selected>Pilih Nama</option>";
+    nameInput.innerHTML = ""; // Kosongkan dropdown
+    nameInput.disabled = true;
+
     if (namaByBidang[bidang]) {
-        nameInput.innerHTML += namaByBidang[bidang].map(nama => `<option value='${nama}'>${nama}</option>`).join("");
+        nameInput.disabled = false;
+        nameInput.innerHTML = `<option value="" disabled selected>Pilih Nama</option>`;
+        namaByBidang[bidang].forEach(nama => {
+            nameInput.innerHTML += `<option value="${nama}">${nama}</option>`;
+        });
     }
-    nameInput.disabled = !namaByBidang[bidang];
 }
 
-// Ambil semua file dari JSONBin.io
+// 🟢 Fungsi untuk mengambil data lama dari JSONBin.io
 async function getAllFiles() {
     let allFiles = [];
-    for (let binId of getBinList()) {
+    let binList = getBinList();
+
+    for (let binId of binList) {
         try {
             const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
                 headers: { "X-Master-Key": API_KEY }
             });
+
             if (response.ok) {
                 const result = await response.json();
                 if (result.record.files) {
@@ -255,37 +240,69 @@ async function getAllFiles() {
             console.error(`Gagal mengambil data dari bin ${binId}:`, error);
         }
     }
+    
     return allFiles;
 }
 
-// Upload file ke JSONBin.io
+// 🟢 Fungsi untuk mengupload file ke JSONBin.io
 async function uploadFile() {
     const fileInput = document.getElementById("fileInput").files[0];
     const bidang = document.getElementById("bidangInput").value;
     const nama = document.getElementById("nameInput").value;
     const tanggal = document.getElementById("dateInput").value;
     const deskripsi = document.getElementById("descInput").value;
-     if (!fileInput || !bidang || !nama || !tanggal || !deskripsi) {
+
+    if (!fileInput || !bidang || !nama || !tanggal || !deskripsi) {
         alert("Semua field harus diisi!");
         return;
     }
-    const compressedImage = await compressImage(fileInput);
-    let dataList = await getAllFiles();
-    if (await isBinFull()) {
-        await createNewBin();
-        dataList = [];
+
+    // ✅ Cek ekstensi & ukuran file sebelum dikompresi
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(fileInput.type)) {
+        alert("Hanya file .jpg, .png, .gif yang diperbolehkan!");
+        return;
     }
-    dataList.push({ bidang, nama, tanggal, deskripsi, fileName: fileInput.name, file: compressedImage });
-    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "X-Master-Key": API_KEY },
-        body: JSON.stringify({ files: dataList })
-    });
-    alert("File berhasil di-upload!");
-    fetchFile();
+
+    try {
+        const compressedImage = await compressImage(fileInput);
+
+        let dataList = await getAllFiles(); // Ambil semua file dari semua bin
+ // Ambil data lama
+
+        // 🟢 **Cek apakah bin sudah penuh**
+        if (dataList.length >= MAX_BIN_SIZE) {
+            await createNewBin(); // Buat bin baru jika penuh
+            dataList = []; // Kosongkan list
+        }
+
+        // Tambahkan file baru
+        dataList.push({ bidang, nama, tanggal, deskripsi, file: compressedImage });
+
+        // Simpan kembali ke JSONBin.io
+        const saveResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": API_KEY
+            },
+            body: JSON.stringify({ files: dataList })
+        });
+
+        if (saveResponse.ok) {
+            alert("File berhasil di-upload!");
+            fetchFile(); // Perbarui tampilan
+        } else {
+            alert("Gagal upload file.");
+        }
+    } catch (error) {
+        console.error("Gagal mengompresi atau mengupload file:", error);
+        alert("Terjadi kesalahan saat mengunggah.");
+    }
 }
 
-// Ambil dan tampilkan file
+
+// 🟢 Fungsi untuk menampilkan data dari JSONBin.io
 async function fetchFile() {
     let allFiles = await getAllFiles();
     const fileList = document.getElementById("fileList");
@@ -293,19 +310,30 @@ async function fetchFile() {
 
     allFiles.forEach(fileData => {
         const listItem = document.createElement("li");
-        listItem.innerHTML = 
+        listItem.innerHTML = `
             <p><strong>Bidang:</strong> ${fileData.bidang}</p>
             <p><strong>Nama:</strong> ${fileData.nama}</p>
             <p><strong>Tanggal:</strong> ${fileData.tanggal}</p>
             <p><strong>Deskripsi:</strong> ${fileData.deskripsi}</p>
             <img src="${fileData.file}" alt="Uploaded Image" style="max-width: 200px;">
             <hr>
-        ;
+        `;
         fileList.appendChild(listItem);
     });
 }
+
+
+// 🟢 Fungsi untuk filter gambar berdasarkan bidang
+function filterImages() {
+    const filterBidang = document.getElementById("filterBidang").value;
+    document.querySelectorAll(".card").forEach(card => {
+        card.style.display = filterBidang === "" || card.dataset.bidang === filterBidang ? "block" : "none";
+    });
+}
+
+// 🟢 Fungsi untuk reset semua data di JSONBin.io
 async function resetData() {
-    await fetch(https://api.jsonbin.io/v3/b/${BIN_ID}, {
+    await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -317,4 +345,6 @@ async function resetData() {
     alert("Data berhasil direset!");
     fetchFile();
 }
+
+// 🔄 Panggil fetchFile() saat halaman dibuka
 fetchFile();
