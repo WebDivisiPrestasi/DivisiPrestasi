@@ -7,6 +7,27 @@ async function saveImage(imageUrl, date, bidang, name, description) {
     images.push({ imageUrl, date, bidang, name, description }); // Tambahkan data baru
     await saveToJSONBin(images); // Simpan semua data
 }
+async function fetchLatestData() {
+    const binId = "67df6dc88960c979a576a220";
+    const apiKey = "$2a$10$oKTpO0s3JULZFRJ9bWypM.p5ZGRGB9XG9ruyLUikjMkA0HDw0L0Re";
+    
+    try {
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+            headers: {
+                "X-Master-Key": apiKey
+            }
+        });
+        const result = await response.json();
+        console.log("Data terbaru:", result);
+        
+        // Di sini, kamu bisa update tampilan dengan data baru
+    } catch (error) {
+        console.error("Gagal mengambil data:", error);
+    }
+}
+
+// Cek data terbaru setiap 5 detik
+setInterval(fetchLatestData, 5000);
 
 async function saveToJSONBin(data) {
     try {
@@ -174,69 +195,70 @@ function updateNamaOptions() {
         nameInput.disabled = true;
     }
 }
-function uploadFile() {
-    const fileInput = document.getElementById('fileInput');
-    const descInput = document.getElementById('descInput');
-    const dateInput = document.getElementById('dateInput');
-    const bidangInput = document.getElementById('bidangInput');
-    const nameInput = document.getElementById('nameInput');
-    const gallery = document.getElementById('gallery');
-
-    if (fileInput.files.length === 0) {
-        alert("Pilih gambar terlebih dahulu!");
-        return;
-    }
-    
-    if (!dateInput.value) {
-        alert("Pilih tanggal terlebih dahulu!");
-        return;
-    }
-
-    if (!bidangInput.value) {
-        alert("Pilih bidang terlebih dahulu!");
-        return;
-    }
-
-    if (!nameInput.value) {
-        alert("Pilih nama terlebih dahulu!");
-        return;
-    }
+async function uploadFile() {
+    const fileInput = document.getElementById("fileInput");
+    const bidangInput = document.getElementById("bidangInput");
+    const namaInput = document.getElementById("namaInput");
 
     const file = fileInput.files[0];
+    if (!file) {
+        alert("Pilih file dulu!");
+        return;
+    }
+
     const reader = new FileReader();
-    
-    reader.onload = function(event) {
-        const imageUrl = event.target.result;
-        const date = dateInput.value;
-        const bidang = bidangInput.options[bidangInput.selectedIndex].text;
-        const name = nameInput.value;
-        const description = descInput.value || "Tidak ada deskripsi.";
-
-        const uploadItem = document.createElement("div");
-        uploadItem.classList.add("upload-item");
-
-        const imgElement = document.createElement("img");
-        imgElement.src = imageUrl;
-
-        const descElement = document.createElement("p");
-        descElement.innerHTML = `<strong>${date} - ${bidang} - ${name}</strong><br>${description}`;
-
-        uploadItem.appendChild(imgElement);
-        uploadItem.appendChild(descElement);
-        gallery.appendChild(uploadItem);
-
-        saveImage(imageUrl, date, bidang, name, description);
-
-        fileInput.value = "";
-        descInput.value = "";
-        dateInput.value = "";
-        bidangInput.value = "";
-        nameInput.innerHTML = '<option value="" disabled selected>Pilih Nama</option>';
-        nameInput.disabled = true;
-    };
-    
     reader.readAsDataURL(file);
+    reader.onload = async function () {
+        const base64String = reader.result; // Konversi ke Base64
+
+        const binId = "BIN_ID_KAMU"; // Ganti dengan ID bin JSONBin.io
+        const apiKey = "API_KEY_KAMU"; // Ganti dengan API Key kamu
+
+        // Data yang akan disimpan
+        const data = {
+            bidang: bidangInput.value,
+            nama: namaInput.value,
+            tanggal: new Date().toISOString().split("T")[0], // Format YYYY-MM-DD
+            file: base64String
+        };
+
+        // Simpan ke JSONBin.io
+        const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Master-Key": apiKey
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            alert("File berhasil di-upload!");
+        } else {
+            alert("Gagal upload file.");
+        }
+    };
 }
+async function fetchFile() {
+    const binId = "BIN_ID_KAMU";
+    const apiKey = "API_KEY_KAMU";
+
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+        headers: { "X-Master-Key": apiKey }
+    });
+
+    const result = await response.json();
+    const data = result.record; // Ambil data dari JSONBin.io
+
+    // Tampilkan data di halaman
+    document.getElementById("output").innerHTML = `
+        <p><strong>Bidang:</strong> ${data.bidang}</p>
+        <p><strong>Nama:</strong> ${data.nama}</p>
+        <p><strong>Tanggal:</strong> ${data.tanggal}</p>
+        <img src="${data.file}" style="max-width: 100%;">
+    `;
+}
+
 async function saveImage(imageUrl, date, bidang, name, description) {
     let images = await loadFromJSONBin(); // Ambil data terbaru
     images.push({ imageUrl, date, bidang, name, description });
