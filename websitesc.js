@@ -131,19 +131,34 @@ function updateNamaOptions() {
             "Khalisha Izzaty Kailani",
             "Khansa Faizah Kurnida",
             "Shantika Ghita Alfatin"
-          ]                    
+          ]     
     };
 
-    nameInput.innerHTML = '<option value="" disabled selected>Pilih Nama</option>';
+    nameInput.innerHTML = ""; // Kosongkan dulu
+
+    const fragment = document.createDocumentFragment();
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Pilih Nama";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    fragment.appendChild(defaultOption);
+
     if (namaByBidang[bidang]) {
         nameInput.disabled = false;
         namaByBidang[bidang].forEach(nama => {
-            nameInput.innerHTML += `<option value="${nama}">${nama}</option>`;
+            const option = document.createElement("option");
+            option.value = nama;
+            option.textContent = nama;
+            fragment.appendChild(option);
         });
     } else {
         nameInput.disabled = true;
     }
+
+    nameInput.appendChild(fragment);
 }
+
 
 // 🟢 Fungsi untuk mengupload data ke JSONBin.io
 async function uploadFile() {
@@ -158,12 +173,24 @@ async function uploadFile() {
         return;
     }
 
+    // ✅ Cek ekstensi file
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(fileInput.type)) {
+        alert("Hanya file gambar (.jpg, .png, .gif) yang diperbolehkan!");
+        return;
+    }
+
+    // ✅ Cek ukuran file (max 2MB)
+    if (fileInput.size > 2 * 1024 * 1024) {
+        alert("Ukuran file terlalu besar! Maksimal 2MB.");
+        return;
+    }
+
     const reader = new FileReader();
     reader.readAsDataURL(fileInput);
     reader.onload = async function () {
-        const base64String = reader.result; // Konversi ke Base64
+        const base64String = reader.result;
 
-        // 1️⃣ Ambil data lama dulu agar tidak menimpa
         let response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
             headers: { "X-Master-Key": API_KEY }
         });
@@ -171,20 +198,12 @@ async function uploadFile() {
         let dataList = [];
         if (response.ok) {
             const result = await response.json();
-            dataList = result.record || [];
+            dataList = Array.isArray(result.record) ? result.record : [];
         }
 
-        // 2️⃣ Tambahkan data baru ke dalam array
-        const newData = {
-            bidang,
-            nama,
-            tanggal,
-            deskripsi,
-            file: base64String
-        };
+        const newData = { bidang, nama, tanggal, deskripsi, file: base64String };
         dataList.push(newData);
 
-        // 3️⃣ Simpan kembali ke JSONBin.io
         const saveResponse = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: "PUT",
             headers: {
@@ -196,12 +215,13 @@ async function uploadFile() {
 
         if (saveResponse.ok) {
             alert("File berhasil di-upload!");
-            fetchFile(); // Perbarui tampilan gallery
+            fetchFile();
         } else {
             alert("Gagal upload file.");
         }
     };
 }
+
 
 // 🟢 Fungsi untuk mengambil dan menampilkan data dari JSONBin.io
 async function fetchFile() {
@@ -210,7 +230,7 @@ async function fetchFile() {
     });
 
     const result = await response.json();
-    const dataList = result.record; // Ambil semua data
+    const dataList = Array.isArray(result.record) ? result.record : []; // Pastikan array
 
     let galleryHTML = "";
     dataList.forEach(data => {
