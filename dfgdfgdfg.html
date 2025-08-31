@@ -29,13 +29,17 @@
 <body>
   <div id="unity-container"></div>
 
-  <!-- Loader dari Unity -->
+  <!-- Loader script -->
   <script src="mathahwwebs/Build/mathahwwebs.loader.js"></script>
   <script>
     createUnityInstance(document.querySelector("#unity-container"), {
-      dataUrl: "mathahwwebs/Build/mathahwwebs.data",
-      frameworkUrl: "mathahwwebs/Build/mathahwwebs.framework.js",
-      codeUrl: "mathahwwebs/Build/mathahwwebs.wasm",
+      dataUrl: "mathahwwebs/Build/mathahwwebs.data.gz",
+      frameworkUrl: "mathahwwebs/Build/mathahwwebs.framework.js.gz",
+      codeUrl: "mathahwwebs/Build/mathahwwebs.wasm.gz",
+      streamingAssetsUrl: "mathahwwebs/StreamingAssets",
+      companyName: "DefaultCompany",
+      productName: "Mathahw Webs",
+      productVersion: "1.0",
     }).then((unityInstance) => {
       console.log("Game started!");
     }).catch((message) => {
