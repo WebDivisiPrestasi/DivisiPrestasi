@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Mathahw Webs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #unity-container {
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="unity-container"></div>
+
+  <!-- Loader dari Unity -->
+  <script src="mathahwwebs/Build/mathahwwebs.loader.js"></script>
+  <script>
+    createUnityInstance(document.querySelector("#unity-container"), {
+      dataUrl: "mathahwwebs/Build/mathahwwebs.data",
+      frameworkUrl: "mathahwwebs/Build/mathahwwebs.framework.js",
+      codeUrl: "mathahwwebs/Build/mathahwwebs.wasm",
+    }).then((unityInstance) => {
+      console.log("Game started!");
+    }).catch((message) => {
+      console.error(message);
+    });
+  </script>
+</body>
+</html>
